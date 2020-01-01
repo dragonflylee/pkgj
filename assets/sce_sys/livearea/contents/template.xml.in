@@ -12,7 +12,7 @@
 	<frame id="frame2">
 		<liveitem>
 			<text valign="bottom" align="left" text-align="left" text-valign="bottom" line-space="3" ellipsis="on">
-				<str color="#ffffff" size="45" bold="on" shadow="on">PKGj v@VITA_VERSION@</str>
+				<str color="#ffffff" size="45" bold="on" shadow="on">PKGj 中文版 v@VITA_VERSION@</str>
 			</text>
 		</liveitem>
 	</frame>

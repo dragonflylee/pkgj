@@ -25,6 +25,7 @@ class VitasdkToolchainConan(ConanFile):
         additional_libs = [
             "libvita2d",
             "libpng",
+            "freetype",
             "libjpeg-turbo",
             "taihen",
         ]
