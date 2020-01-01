@@ -12,6 +12,7 @@ extern "C"
 #include "download.hpp"
 #include "downloader.hpp"
 #include "gameview.hpp"
+#include "file.hpp"
 #include "imgui.hpp"
 #include "install.hpp"
 #include "menu.hpp"
@@ -30,9 +31,6 @@ extern "C"
 
 #include <cstddef>
 #include <cstring>
-
-#define PKGI_UPDATE_URL \
-    "https://api.github.com/repos/blastrock/pkgj/releases/latest"
 
 namespace
 {
@@ -106,10 +104,10 @@ Type mode_to_type(Mode mode)
     case ModeDemos:
     case ModeThemes:
         throw formatEx<std::runtime_error>(
-                "unsupported mode {}", static_cast<int>(mode));
+                "不支持的模式 {}", static_cast<int>(mode));
     }
     throw formatEx<std::runtime_error>(
-            "unknown mode {}", static_cast<int>(mode));
+            "未知模式 {}", static_cast<int>(mode));
 }
 
 BgdlType mode_to_bgdl_type(Mode mode)
@@ -125,7 +123,7 @@ BgdlType mode_to_bgdl_type(Mode mode)
         return BgdlTypeTheme;
     default:
         throw formatEx<std::runtime_error>(
-                "unsupported bgdl mode {}", static_cast<int>(mode));
+                "不支持的后台下载模式 {}", static_cast<int>(mode));
     }
 }
 
@@ -149,7 +147,7 @@ void configure_db(TitleDatabase* db, const char* search, const Config* config)
         snprintf(
                 error_state,
                 sizeof(error_state),
-                "can't reload list: %s",
+                "无法重新加载列表: %s",
                 e.what());
         pkgi_dialog_error(error_state);
     }
@@ -177,7 +175,7 @@ std::string const& pkgi_get_url_from_mode(Mode mode)
         return config.psx_games_url;
     }
     throw std::runtime_error(
-            fmt::format("unknown mode: {}", static_cast<int>(mode)));
+            fmt::format("未知模式: {}", static_cast<int>(mode)));
 }
 
 void pkgi_refresh_thread(void)
@@ -197,7 +195,7 @@ void pkgi_refresh_thread(void)
             {
                 std::lock_guard<Mutex> lock(refresh_mutex);
                 current_action = fmt::format(
-                        "Refreshing {} [{}/{}]",
+                        "正在刷新 {} [{}/{}]",
                         pkgi_mode_to_string(mode),
                         i + 1,
                         mode_count);
@@ -210,9 +208,9 @@ void pkgi_refresh_thread(void)
             {
                 std::lock_guard<Mutex> lock(refresh_mutex);
                 current_action = fmt::format(
-                        "Refreshing games compatibility packs [{}/{}]",
-                        mode_count - 1,
-                        mode_count);
+                        "正在刷新 游戏本体兼容包 [{}/{}]",
+                        ModeCount + 2 - 1,
+                        ModeCount + 2);
             }
             {
                 auto const http = std::make_unique<VitaHttp>();
@@ -222,9 +220,9 @@ void pkgi_refresh_thread(void)
             {
                 std::lock_guard<Mutex> lock(refresh_mutex);
                 current_action = fmt::format(
-                        "Refreshing updates compatibility packs [{}/{}]",
-                        mode_count,
-                        mode_count);
+                        "正在刷新 游戏更新兼容包 [{}/{}]",
+                        ModeCount + 2,
+                        ModeCount + 2);
             }
             {
                 auto const http = std::make_unique<VitaHttp>();
@@ -241,7 +239,7 @@ void pkgi_refresh_thread(void)
         snprintf(
                 error_state,
                 sizeof(error_state),
-                "can't get list: %s",
+                "无法获取列表: %s",
                 e.what());
         pkgi_dialog_error(error_state);
     }
@@ -298,35 +296,6 @@ void pkgi_install_package(Downloader& downloader, DbItem* item)
 
     pkgi_start_download(downloader, *item);
     item->presence = PresenceUnknown;
-}
-
-void pkgi_friendly_size(char* text, uint32_t textlen, int64_t size)
-{
-    if (size <= 0)
-    {
-        text[0] = 0;
-    }
-    else if (size < 1000LL)
-    {
-        pkgi_snprintf(text, textlen, "%u " PKGI_UTF8_B, (uint32_t)size);
-    }
-    else if (size < 1000LL * 1000)
-    {
-        pkgi_snprintf(text, textlen, "%.2f " PKGI_UTF8_KB, size / 1024.f);
-    }
-    else if (size < 1000LL * 1000 * 1000)
-    {
-        pkgi_snprintf(
-                text, textlen, "%.2f " PKGI_UTF8_MB, size / 1024.f / 1024.f);
-    }
-    else
-    {
-        pkgi_snprintf(
-                text,
-                textlen,
-                "%.2f " PKGI_UTF8_GB,
-                size / 1024.f / 1024.f / 1024.f);
-    }
 }
 
 void pkgi_set_mode(Mode set_mode)
@@ -605,7 +574,7 @@ void pkgi_do_main(Downloader& downloader, pkgi_input* input)
 
     if (db_count == 0)
     {
-        const char* text = "No items! Try to refresh.";
+        const char* text = "无数据! 请尝试刷新";
 
         int w = pkgi_text_width(text);
         pkgi_draw_text(
@@ -708,10 +677,8 @@ void pkgi_do_refresh(void)
 
 void pkgi_do_head(void)
 {
-    const char* version = PKGI_VERSION;
-
     char title[256];
-    pkgi_snprintf(title, sizeof(title), "PKGj v%s", version);
+    pkgi_snprintf(title, sizeof(title), "PKGj中文版 v%s", PKGI_VERSION);
     pkgi_draw_text(0, 0, PKGI_COLOR_TEXT_HEAD, title);
 
     pkgi_draw_rect(
@@ -728,7 +695,7 @@ void pkgi_do_head(void)
         pkgi_snprintf(
                 battery,
                 sizeof(battery),
-                "Battery: %u%%",
+                "电池: %u%%",
                 pkgi_bettery_get_level());
 
         uint32_t color;
@@ -840,14 +807,14 @@ void pkgi_do_tail(Downloader& downloader)
         pkgi_snprintf(
                 text,
                 sizeof(text),
-                "Downloading %s: %s (%s, %d%%)",
+                "正在下载 %s: %s (%s, %d%%)",
                 type_to_string(current_download->type).c_str(),
                 current_download->name.c_str(),
                 sspeed.c_str(),
                 static_cast<int>(download_offset * 100 / download_size));
     }
     else
-        pkgi_snprintf(text, sizeof(text), "Idle");
+        pkgi_snprintf(text, sizeof(text), "暂无下载");
 
     pkgi_draw_text(0, bottom_y, PKGI_COLOR_TEXT_TAIL, text);
 
@@ -858,11 +825,11 @@ void pkgi_do_tail(Downloader& downloader)
 
     if (count == total)
     {
-        pkgi_snprintf(text, sizeof(text), "Count: %u", count);
+        pkgi_snprintf(text, sizeof(text), "计数: %u", count);
     }
     else
     {
-        pkgi_snprintf(text, sizeof(text), "Count: %u (%u)", count, total);
+        pkgi_snprintf(text, sizeof(text), "计数: %u (%u)", count, total);
     }
     pkgi_draw_text(0, second_line, PKGI_COLOR_TEXT_TAIL, text);
 
@@ -873,7 +840,7 @@ void pkgi_do_tail(Downloader& downloader)
                 pkgi_get_free_space(pkgi_get_mode_partition()));
 
     char free[64];
-    pkgi_snprintf(free, sizeof(free), "Free: %s", size);
+    pkgi_snprintf(free, sizeof(free), "可用空间: %s", size);
 
     int rightw = pkgi_text_width(free);
     pkgi_draw_text(
@@ -888,30 +855,30 @@ void pkgi_do_tail(Downloader& downloader)
     std::string bottom_text;
     if (gameview || pkgi_dialog_is_open()) {
         bottom_text = fmt::format(
-                "{} select {} close",
+                "{} 选择 {} 关闭",
                 pkgi_get_ok_str(),
                 pkgi_get_cancel_str());
     }
     else if (pkgi_menu_is_open())
     {
         bottom_text = fmt::format(
-                "{} select  " PKGI_UTF8_T " close  {} cancel",
+                "{} 选择  " PKGI_UTF8_T " 关闭  {} 取消",
                 pkgi_get_ok_str(),
                 pkgi_get_cancel_str());
     }
     else
     {
         if (mode == ModeGames)
-            bottom_text += fmt::format("{} details ", pkgi_get_ok_str());
+            bottom_text += fmt::format("{} 详情 ", pkgi_get_ok_str());
         else
         {
             DbItem* item = db->get(selected_item);
             if (item && item->presence == PresenceInstalling)
-                bottom_text += fmt::format("{} cancel ", pkgi_get_ok_str());
+                bottom_text += fmt::format("{} 取消 ", pkgi_get_ok_str());
             else if (item && item->presence != PresenceInstalled)
-                bottom_text += fmt::format("{} install ", pkgi_get_ok_str());
+                bottom_text += fmt::format("{} 安装 ", pkgi_get_ok_str());
         }
-        bottom_text += PKGI_UTF8_T " menu";
+        bottom_text += PKGI_UTF8_T " 菜单";
     }
 
     pkgi_clip_set(
@@ -971,7 +938,7 @@ void pkgi_reload()
         LOGF("error during reload: {}", e.what());
         pkgi_dialog_error(
                 fmt::format(
-                        "failed to reload db: {}, try to refresh?", e.what())
+                        "数据库重新加载失败: {}, 请尝试刷新?", e.what())
                         .c_str());
     }
 }
@@ -993,7 +960,7 @@ void pkgi_open_db()
     {
         LOGF("error during database open: {}", e.what());
         throw formatEx<std::runtime_error>(
-                "DB initialization error: %s\nTry to delete them?");
+                "数据库初始化失败: %s\n是否要清除数据库缓存?");
     }
 
     pkgi_reload();
@@ -1026,8 +993,8 @@ void pkgi_start_download(Downloader& downloader, const DbItem& item)
                                           rif, rif + PKGI_PSM_RIF_SIZE));
                 pkgi_dialog_message(
                         fmt::format(
-                                "Installation of {} queued in LiveArea",
-                                item.name)
+                                "已将 {} 添加至LiveArea下载队列",
+                                item.titleid)
                                 .c_str());
             }
             else
@@ -1059,7 +1026,7 @@ void pkgi_start_download(Downloader& downloader, const DbItem& item)
     catch (const std::exception& e)
     {
         pkgi_dialog_error(
-                fmt::format("Failed to install {}: {}", item.name, e.what())
+                fmt::format("{}安装失败: {}", item.titleid, e.what())
                         .c_str());
     }
 }
@@ -1072,8 +1039,7 @@ int main()
     {
         if (!pkgi_is_unsafe_mode())
             throw std::runtime_error(
-                    "pkgj requires unsafe mode to be enabled in Henkaku "
-                    "settings!");
+                    "PKGj需要在Henkaku设置中启用不安全自制软件!");
 
         Downloader downloader;
 
@@ -1084,7 +1050,7 @@ int main()
         };
         downloader.error = [](const std::string& error) {
             // FIXME this runs on the wrong thread
-            pkgi_dialog_error(("Download failure: " + error).c_str());
+            pkgi_dialog_error(("下载失败: " + error).c_str());
         };
 
         LOG("started");
@@ -1111,18 +1077,16 @@ int main()
         // Build and load the texture atlas into a texture
         uint32_t* pixels = NULL;
         int width, height;
-        if (!io.Fonts->AddFontFromFileTTF(
-                    "sa0:/data/font/pvf/ltn0.pvf",
-                    20.0f,
-                    0,
-                    io.Fonts->GetGlyphRangesDefault()))
-            throw std::runtime_error("failed to load ltn0.pvf");
-        if (!io.Fonts->AddFontFromFileTTF(
-                    "sa0:/data/font/pvf/jpn0.pvf",
-                    20.0f,
-                    0,
-                    io.Fonts->GetGlyphRangesJapanese()))
-            throw std::runtime_error("failed to load jpn0.pvf");
+        auto const path = fmt::format("{}/font.ttf", pkgi_get_config_folder());
+        if (pkgi_file_exists(path)) {
+            if (!io.Fonts->AddFontFromFileTTF(path.c_str(), 20.0f, nullptr,
+                    io.Fonts->GetGlyphRangesChineseSimplifiedCommon()))
+            throw std::runtime_error(fmt::format("无法加载 {}", path));
+        }
+        else if (!io.Fonts->AddFontFromFileTTF(
+                    "sa0:/data/font/pvf/cn0.pvf", 20.0f, nullptr,
+                    io.Fonts->GetGlyphRangesChineseSimplifiedCommon()))
+            throw std::runtime_error("无法加载 cn0.pvf");
         io.Fonts->GetTexDataAsRGBA32((uint8_t**)&pixels, &width, &height);
         vita2d_texture* font_texture =
                 vita2d_create_empty_texture(width, height);
@@ -1253,7 +1217,7 @@ int main()
                     switch (mres)
                     {
                     case MenuResultSearch:
-                        pkgi_dialog_input_text("Search", search_text);
+                        pkgi_dialog_input_text("搜索", search_text);
                         break;
                     case MenuResultSearchClear:
                         search_active = 0;
@@ -1320,7 +1284,7 @@ int main()
         LOGF("Error in main: {}", e.what());
         state = StateError;
         pkgi_snprintf(
-                error_state, sizeof(error_state), "Fatal error: %s", e.what());
+                error_state, sizeof(error_state), "致命错误: %s", e.what());
 
         pkgi_input input;
         while (pkgi_update(&input))

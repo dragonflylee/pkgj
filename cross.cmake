@@ -94,7 +94,7 @@ target_link_libraries(pkgj
   SceHttp_stub
   SceNet_stub
   SceNetCtl_stub
-  ScePgf_stub
+  ScePvf_stub
   ScePower_stub
   ScePromoterUtil_stub
   SceShellSvc_stub

@@ -31,7 +31,7 @@ void FileDownload::start_download()
 
     const auto http_length = _http->get_length();
     if (http_length < 0)
-        throw DownloadError("HTTP response has unknown length");
+        throw DownloadError("HTTP响应的长度未知");
 
     download_size = http_length;
     LOGF("http response length = {}", download_size);
@@ -40,7 +40,7 @@ void FileDownload::start_download()
 void FileDownload::download_data(uint32_t size)
 {
     if (is_canceled())
-        throw std::runtime_error("download was canceled");
+        throw std::runtime_error("下载已被取消");
 
     if (size == 0)
         return;
@@ -54,7 +54,7 @@ void FileDownload::download_data(uint32_t size)
         {
             const int read = _http->read(buffer.data() + pos, size - pos);
             if (read == 0)
-                throw DownloadError("HTTP connection closed");
+                throw DownloadError("HTTP连接已断开");
             pos += read;
         }
     }
@@ -71,7 +71,7 @@ void FileDownload::download_file()
     LOGF("creating {} file", root);
     item_file = pkgi_create(root.c_str());
     if (!item_file)
-        throw formatEx<DownloadError>("cannot create file {}", root);
+        throw formatEx<DownloadError>("无法创建文件 {}", root);
 
     BOOST_SCOPE_EXIT_ALL(&)
     {

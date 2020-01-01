@@ -37,33 +37,33 @@ typedef struct
 } MenuEntry;
 
 static const MenuEntry menu_entries[] = {
-        {MenuSearch, "Search...", 0},
-        {MenuSearchClear, PKGI_UTF8_CLEAR " clear", 0},
+        {MenuSearch, "搜索...", 0},
+        {MenuSearchClear, PKGI_UTF8_CLEAR " 取消搜索", 0},
 
-        {MenuText, "Sort by:", 0},
-        {MenuSort, "Title", SortByTitle},
-        {MenuSort, "Region", SortByRegion},
-        {MenuSort, "Name", SortByName},
-        {MenuSort, "Size", SortBySize},
-        {MenuSort, "Date", SortByDate},
+        {MenuText, "排序顺序:", 0},
+        {MenuSort, "游戏编号", SortByTitle},
+        {MenuSort, "发行区域", SortByRegion},
+        {MenuSort, "游戏名称", SortByName},
+        {MenuSort, "游戏容量", SortBySize},
+        {MenuSort, "更新时间", SortByDate},
 
-        {MenuText, "Filters:", 0},
-        {MenuFilter, "Asia", DbFilterRegionASA},
-        {MenuFilter, "Europe", DbFilterRegionEUR},
-        {MenuFilter, "Japan", DbFilterRegionJPN},
-        {MenuFilter, "USA", DbFilterRegionUSA},
-        {MenuFilter, "Installed games only", DbFilterInstalled},
+        {MenuText, "筛选项:", 0},
+        {MenuFilter, "亚洲", DbFilterRegionASA},
+        {MenuFilter, "欧洲", DbFilterRegionEUR},
+        {MenuFilter, "日本", DbFilterRegionJPN},
+        {MenuFilter, "美国", DbFilterRegionUSA},
+        {MenuFilter, "已安装的游戏", DbFilterInstalled},
 
-        {MenuRefresh, "Refresh", 0},
+        {MenuRefresh, "刷新列表", 0},
 
-        {MenuShow, "Show games", 1},
-        {MenuShow, "Show DLCs", 2},
-        {MenuShow, "Show Demos", 64},
-        {MenuShow, "Show Themes", 32},
-        {MenuShow, "Show PSX games", 4},
-        {MenuShow, "Show PSP games", 8},
-        {MenuShow, "Show PSP DLCs", 128},
-        {MenuShow, "Show PSM games", 16},
+        {MenuShow, "显示PSV游戏", 1},
+        {MenuShow, "显示PSV追加下载内容", 2},
+        {MenuShow, "显示PSV体验版游戏", 64},
+        {MenuShow, "显示PSV主题", 32},
+        {MenuShow, "显示PSX游戏", 4},
+        {MenuShow, "显示PSP游戏", 8},
+        {MenuShow, "显示PSP追加下载内容", 128},
+        {MenuShow, "显示PSM游戏", 16},
 };
 
 int pkgi_menu_is_open(void)
@@ -259,7 +259,7 @@ int pkgi_do_menu(pkgi_input* input)
         const MenuEntry* entry = menu_entries + i;
 
         MenuType type = entry->type;
-        if (type == MenuText)
+        /*if (type == MenuText)
         {
             y += font_height / 3;
         }
@@ -276,7 +276,18 @@ int pkgi_do_menu(pkgi_input* input)
                 continue;
             }
         }
-
+        *///压缩菜单空间
+        if (type == MenuSearchClear && !menu_search_clear)
+        {
+            continue;
+        }
+        if (type == MenuShow)
+        {
+            if (!(entry->value & menu_allow_refresh))
+            {
+                continue;
+            }
+        }
         uint32_t color = menu_selected == i ? PKGI_COLOR_TEXT_MENU_SELECTED
                                             : PKGI_COLOR_TEXT_MENU;
 

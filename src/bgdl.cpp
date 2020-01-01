@@ -162,7 +162,7 @@ void init_download_class(scedownload_class* sceDownloadObj)
 
     if (res != 0xc4)
         throw formatEx<std::runtime_error>(
-                "SceIpmi_4E255C31 failed: {:#08x}", static_cast<uint32_t>(res));
+                "接口4E255C31失败: {:#08x}", static_cast<uint32_t>(res));
 
     sceDownloadObj->class_header = (scedownload_class_header*)new char[0x18]();
 
@@ -177,7 +177,7 @@ void init_download_class(scedownload_class* sceDownloadObj)
             sceDownloadObj->class_header->buf10000);
     if (res != 0)
         throw formatEx<std::runtime_error>(
-                "SceIpmi_B282B430 init failed: {:#08x}",
+                "接口B282B430初始化失败: {:#08x}",
                 static_cast<uint32_t>(res));
 
     sceDownloadObj->init =
@@ -193,7 +193,7 @@ void init_download_class(scedownload_class* sceDownloadObj)
             2);
     if (res != 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload init failed: {:#08x}", static_cast<uint32_t>(res));
+                "下载初始化失败: {:#08x}", static_cast<uint32_t>(res));
 }
 
 void scedownload_start_with_rif(
@@ -246,19 +246,19 @@ void scedownload_start_with_rif(
 
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload change_state failed: {:#08x}",
+                "SceDownload函数状态变更失败: {:#08x}",
                 static_cast<uint32_t>(res));
     if (result < 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload change_state result failed: {:#08x}",
+                "SceDownload函数状态变更返回值错误: {:#08x}",
                 static_cast<uint32_t>(result));
     if (bgdlid < 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload change_state bgdlid failed: {:#08x}",
+                "SceDownload函数更改后台下载ID失败: {:#08x}",
                 static_cast<uint32_t>(res));
     if (reinterpret_cast<intptr_t>(params.init.addr_DC0) < 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload change_state DC0 failed: {:#08x}",
+                "SceDownload函数更改DC0状态失败: {:#08x}",
                 reinterpret_cast<uintptr_t>(params.init.addr_DC0));
 
     result = 0;
@@ -273,11 +273,11 @@ void scedownload_start_with_rif(
             sceDownloadObj->class_header->func_table, 0x12340007, 0, 0, params);
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload second change_state failed: {:#08x}",
+                "SceDownload函数第二次状态变更失败: {:#08x}",
                 static_cast<uint32_t>(res));
     if (result < 0)
         throw formatEx<std::runtime_error>(
-                "SceDownload second change_state result failed: {:#08x}",
+                "SceDownload函数第二次状态变更返回值错误: {:#08x}",
                 static_cast<uint32_t>(result));
     buf_dc0.clear();
     buf_2e0.clear();
@@ -315,9 +315,9 @@ void pkgi_start_bgdl(
 {
     if (pkgi_list_dir_contents(fmt::format("{}bgdl/t", partition)).size() >= 32)
         throw std::runtime_error(
-                "There are too many pending installation on your device, "
-                "install them from LiveArea's notifications or delete them to "
-                "be able to download more.");
+                "已有太多的下载进程待处理, "
+                "请通过LiveArea的通知中安装或删除它们, "
+                "以便下载更多内容");
 
     static auto example_class = new_scedownload();
 

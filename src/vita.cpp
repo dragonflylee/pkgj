@@ -51,7 +51,7 @@ extern "C"
     extern SceUID _vshKernelSearchModuleByName(const char *name, SceUInt64 *unk);
 }
 
-static vita2d_pgf* g_font;
+static vita2d_pvf* g_font;
 
 static SceKernelLwMutexWork g_dialog_lock;
 static volatile int g_power_lock;
@@ -161,6 +161,18 @@ int pkgi_is_korean_char(const unsigned int c) {
     }
     // korean won sign
     if (ch == 0xffe6) {
+        return 1;
+    }
+    return 0;
+}
+
+int pkgi_is_chinese_char(const unsigned int c) {
+    unsigned short ch = c;
+    // Hangul compatibility jamo block
+    if (0x3400 <= ch && ch <= 0x4DB5) {
+        return 1;
+    }
+    if (0x4E00 <= ch && ch <= 0x9FA5) {
         return 1;
     }
     return 0;
@@ -549,13 +561,24 @@ void pkgi_start(void)
         sceKernelStartThread(power_thread, 0, NULL);
     }
 
-    vita2d_init_advanced(4 * 1024 * 1024);
-    vita2d_system_pgf_config pgf_confs[3] = {
-        {SCE_FONT_LANGUAGE_KOREAN,  pkgi_is_korean_char},
-        {SCE_FONT_LANGUAGE_LATIN,   pkgi_is_latin_char},
-        {SCE_FONT_LANGUAGE_DEFAULT, NULL},
-    };
-    g_font = vita2d_load_system_pgf(3, pgf_confs);
+    vita2d_init_advanced(16 * 1024 * 1024);
+
+    if (pkgi_is_unsafe_mode()) {
+        auto const path = fmt::format("{}/font.ttf", pkgi_get_config_folder());
+        if (pkgi_file_exists(path))
+            g_font = vita2d_load_custom_pvf(path.c_str());
+    }
+
+    if (!g_font) 
+    {
+        vita2d_system_pvf_config config[] = {
+            { SCE_PVF_LANGUAGE_K, pkgi_is_korean_char },
+            { SCE_PVF_LANGUAGE_C, pkgi_is_chinese_char },
+            { SCE_PVF_LANGUAGE_LATIN, pkgi_is_latin_char },
+            { SCE_PVF_DEFAULT_LANGUAGE_CODE, nullptr }
+        };
+        g_font = vita2d_load_system_pvf(4, config);
+    }
 
     g_time = sceKernelGetProcessTimeWide();
 
@@ -623,7 +646,7 @@ void pkgi_end(void)
     pkgi_stop_debug_log();
 
     vita2d_fini();
-    vita2d_free_pgf(g_font);
+    vita2d_free_pvf(g_font);
 
     scePromoterUtilityExit();
 
@@ -671,6 +694,35 @@ uint64_t pkgi_get_free_space(const char* requested_partition)
     return info.free_size;
 }
 
+void pkgi_friendly_size(char* text, uint32_t textlen, int64_t size)
+{
+    if (size <= 0)
+    {
+        text[0] = 0;
+    }
+    else if (size < 1000LL)
+    {
+        pkgi_snprintf(text, textlen, "%u " PKGI_UTF8_B, (uint32_t)size);
+    }
+    else if (size < 1000LL * 1000)
+    {
+        pkgi_snprintf(text, textlen, "%.2f " PKGI_UTF8_KB, size / 1024.f);
+    }
+    else if (size < 1000LL * 1000 * 1000)
+    {
+        pkgi_snprintf(
+                text, textlen, "%.2f " PKGI_UTF8_MB, size / 1024.f / 1024.f);
+    }
+    else
+    {
+        pkgi_snprintf(
+                text,
+                textlen,
+                "%.2f " PKGI_UTF8_GB,
+                size / 1024.f / 1024.f / 1024.f);
+    }
+}
+
 const char* pkgi_get_config_folder()
 {
     if (0)
@@ -703,7 +755,7 @@ void pkgi_delete_dir(const std::string& path)
 
     if (dfd < 0)
         throw formatEx<std::runtime_error>(
-                "failed sceIoDopen({}):\n{:#08x}",
+                "打开失败 ({}):\n{:#08x}",
                 path,
                 static_cast<uint32_t>(dfd));
 
@@ -733,7 +785,7 @@ void pkgi_delete_dir(const std::string& path)
             const auto ret = sceIoRemove(new_path.c_str());
             if (ret < 0)
                 throw formatEx<std::runtime_error>(
-                        "failed sceIoRemove({}):\n{:#08x}",
+                        "删除失败 ({}):\n{:#08x}",
                         new_path,
                         static_cast<uint32_t>(ret));
         }
@@ -745,7 +797,7 @@ void pkgi_delete_dir(const std::string& path)
     res = sceIoRmdir(path.c_str());
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "failed sceIoRmdir({}):\n{:#08x}",
+                "文件夹删除失败 ({}):\n{:#08x}",
                 path,
                 static_cast<uint32_t>(res));
 }
@@ -842,18 +894,18 @@ void pkgi_draw_rect(int x, int y, int w, int h, uint32_t color)
 
 void pkgi_draw_text(int x, int y, uint32_t color, const char* text)
 {
-    vita2d_pgf_draw_text(g_font, x, y + 20, VITA_COLOR(color), 1.f, text);
+    vita2d_pvf_draw_text(g_font, x, y + 20, VITA_COLOR(color), 1.f, text);
 }
 
 int pkgi_text_width(const char* text)
 {
-    return vita2d_pgf_text_width(g_font, 1.f, text);
+    return vita2d_pvf_text_width(g_font, 1.f, text);
 }
 
 int pkgi_text_height(const char* text)
 {
     PKGI_UNUSED(text);
-    // return vita2d_pgf_text_height(g_font, 1.f, text);
+    // return vita2d_font_text_height(g_font, 1.f, text);
     return 23;
 }
 
@@ -865,7 +917,7 @@ std::string pkgi_get_system_version()
         const auto res = _vshSblGetSystemSwVersion(&info);
         if (res < 0)
             throw std::runtime_error(fmt::format(
-                    "sceKernelGetSystemSwVersion failed: {:#08x}",
+                    "获取系统软件版本失败: {:#08x}",
                     static_cast<uint32_t>(res)));
         return std::string(info.versionString);
     }();

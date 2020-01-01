@@ -15,25 +15,25 @@ std::string type_to_string(Type type)
     switch (type)
     {
     case Type::Game:
-        return "game";
+        return "PSV游戏";
     case Type::Patch:
-        return "patch";
+        return "PSV游戏更新";
     case Type::Dlc:
-        return "DLC";
+        return "PSV追加下载内容";
     case Type::PsmGame:
-        return "PSM game";
+        return "PSM游戏";
     case Type::PsxGame:
-        return "PSX game";
+        return "PSX游戏";
     case Type::PspGame:
-        return "PSP game";
+        return "PSP游戏";
     case Type::PspDlc:
-        return "PSP DLC";
+        return "PSP追加下载内容";
     case Type::CompPackBase:
-        return "Base Comp Pack";
+        return "游戏本体兼容包";
     case Type::CompPackPatch:
-        return "Patch Comp Pack";
+        return "游戏更新兼容包";
     }
-    return "unknown";
+    return "未知";
 }
 
 Downloader::Downloader()
@@ -196,7 +196,7 @@ void Downloader::do_download_package(const DownloadItem& item)
     case CompPackBase:
     case CompPackPatch:
         throw std::runtime_error(
-                "assertion failure: can't handle comppack in download_package");
+                "声明错误: 无法处理兼容包的压缩文件");
     }
     pkgi_rm(fmt::format("{}pkgj/{}.resume", item.partition, item.content)
                     .c_str());

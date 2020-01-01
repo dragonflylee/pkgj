@@ -1,41 +1,40 @@
 # pkgj
 
-[![Travis CI Build Status][img_travis]][pkgj_travis] [![Downloads][img_downloads]][pkgj_downloads] [![Release][img_latest]][pkgj_latest] [![License][img_license]][pkgj_license]
+[![Downloads][img_downloads]][pkgj_downloads] [![Release][img_latest]][pkgj_latest] [![License][img_license]][pkgj_license]
 
-This homebrew allows to download & unpack pkg file directly on Vita together with your [NoNpDrm][] or [NoPsmDrm][] fake license.
+PKGj是一款搭配NoNpDRM、NoNpPSM使用的PSV游戏下载器。（中文俗称黑商店）
 
-# Features
+# 功能
 
-* **works on** all PS Vita models, including PSTV.
-* **easy** way to see list of available downloads, including searching, filter & sorting.
-* **standalone**, no PC required, everything happens directly on Vita.
-* **automatic** download and unpack, just choose an item, and it will be installed, including bubble in live area.
-* **background downloads**, now supports native bgdl function, so you can do whatever you want on the console while content is downloading.
-* **queues** multiple downloads.
-* **supports** the TSV file format.
-* **installs** Game Updates, DLCs, Demos, Themes, PSM, PSP games, PSP DLCs, and PSX games.
+* **简单** 所见即所得.
+* **独立性**, 无需PC，所有操作均在PSV上完成.
+* **自动化** 下载、解压缩、安装、刷新livearea全部都会自动完成.
+* **队列** 多任务下载支持.
+* **文件格式** TSV格式文件列表（标准csv格式）.
+* **安装** 可以安装PSV游戏、DLC、演示版，PSP游戏、DLC，PSX、PSM游戏和主题.
+* **系统级后台下载** 调用系统下载解压方法，与PSN同样的下载体验。
 
-Current limitations:
-* **no background downloads for PSX/PSP/PSM titles** - if application is closed or Vita is put in sleep then download will stop.
+已知问题:
+* **PSX/PSP 后台下载** - if application is closed or Vita is put in sleep then download will stop.
 
 # Download
 
-Get latest version as [vpk file here][pkgj_latest].
+下载最新的版本 [VPK文件][pkgj_latest].
 
-# Usage
+# 使用方法
 
-Make sure unsafe mode is enabled in Henkaku settings.
+首先在Henkaku设置中启用不安全的自制软件.
 
 Using application is pretty straight forward. Select item you want to install and press X and follow the instructions. To sort/filter/search press triangle.
 It will open context menu. Press triangle again to confirm choice(s) you make in menu. Or press O to cancel any changes you did.
 
 Press left or right button to move page up or down.
 
-# Configuration
+# 配置文件
 
-pkgj is shipped with valid default URLs. If you wish to change some settings, they can be configured through `ux0:pkgj/config.txt` or `ur0:pkgj/config.txt`.
+pkgj 读取 ux0:pkgj/config.txt 或 ur0:pkgj/config.txt.作为配置文件 若文件不存在PKGj将会采用默认配置
 
-| Option | Description |
+| 选项 | 说明 |
 | --- | --- |
 | `url_games <URL>` | The URL of the PS Vita game list |
 | `url_psv_demos <URL>` | The URL of the PS Vita demo list |
@@ -49,6 +48,8 @@ pkgj is shipped with valid default URLs. If you wish to change some settings, th
 | `install_psp_as_pbp 1` | Install PSP games as EBOOT.EBP files instead of ISO files (see Q&A) |
 | `install_psp_psx_location uma0:` | Install PSP and PSX games on `uma0:` |
 | `no_version_check 1` | Do not check for update when starting PKGj |
+
+pkgj 读取 ux0:pkgj/font.ttf 作为游戏列表显示字体 若文件不存则使用系统字体
 
 # Q&A
 
@@ -89,10 +90,10 @@ pkgj is shipped with valid default URLs. If you wish to change some settings, th
 
     Compatiblity packs are deprecated and disabled by default. It is recommended to use [reF00D](https://github.com/dots-tb/reF00D) or [0syscall6](https://github.com/SKGleba/0syscall6). If you would still like to use compatiblity packs, set `url_comppack` to `https://gitlab.com/nopaystation_repos/nps_compati_packs/raw/master/` in the config file. Firmwares 3.65 or lower require a workaround for TLS. The compatibility pack list has not been updated since Oct 2019.
 
-# Building
+# 编译方法
 
-pkgj uses conan and cmake to build. The setup is a bit tedious, so the
-recommended way is to run ci/ci.sh. It will create a Python virtualenv with
+pkgj 使用 conan 和 cmake 构建. 编译环境搭建有点复杂, 推荐使用脚本 ci/ci.sh 进行构建。
+It will create a Python virtualenv with
 conan, setup the configuration for cross-compilation, register some recipes,
 and then run cmake and build pkgj for your vita and pkgj_cli for testing.
 
@@ -130,22 +131,20 @@ puff.h and puff.c files are under [zlib][] license.
 [NoPsmDrm]: https://github.com/frangarcj/NoPsmDrm/
 [zrif_online_converter]: https://rawgit.com/mmozeiko/pkg2zip/online/zrif.html
 [pkg_dec]: https://github.com/weaknespase/PkgDecrypt
-[pkg_releases]: https://github.com/blastrock/pkgj/releases
+[pkg_releases]: https://github.com/dragonflylee/pkgj/releases
 [vitasdk]: https://vitasdk.org/
 [libvita2d]: https://github.com/xerpi/libvita2d
 [PSDLE]: https://repod.github.io/psdle/
 [socat]: http://www.dest-unreach.org/socat/
 [zlib]: https://www.zlib.net/zlib_license.html
-[pkgj_travis]: https://travis-ci.org/blastrock/pkgj/
-[pkgj_downloads]: https://github.com/blastrock/pkgj/releases
-[pkgj_latest]: https://github.com/blastrock/pkgj/releases/latest
-[pkgj_license]: https://github.com/blastrock/pkgj/blob/master/LICENSE
-[img_travis]: https://api.travis-ci.org/blastrock/pkgj.svg?branch=master
-[img_downloads]: https://img.shields.io/github/downloads/blastrock/pkgj/total.svg?maxAge=3600
-[img_latest]: https://img.shields.io/github/release/blastrock/pkgj.svg?maxAge=3600
-[img_license]: https://img.shields.io/github/license/blastrock/pkgj.svg?maxAge=2592000
+[pkgj_downloads]: https://github.com/dragonflylee/pkgj/releases
+[pkgj_latest]: https://github.com/dragonflylee/pkgj/releases/latest
+[pkgj_license]: https://github.com/dragonflylee/pkgj/blob/master/LICENSE
+[img_downloads]: https://img.shields.io/github/downloads/dragonflylee/pkgj/total.svg?maxAge=3600
+[img_latest]: https://img.shields.io/github/release/dragonflylee/pkgj.svg?maxAge=3600
+[img_license]: https://img.shields.io/github/license/dragonflylee/pkgj.svg?maxAge=2592000
 
-# Donating
-
+# 捐赠
+以下是原作者的BitCoin钱包代码
 Bitcoin: 128vikqd3AyNEXEiU5uSJvCrRq1e3kRX6n
 Monero: 45sCwEFcPD9ZfwD2UKt6gcG3vChFrMmJHUmVVBUWwPFoPsjmkzvN7i9DKn4pUkyif5axgbnYNqU3NCqugudjTWqdFv5uKQV

@@ -15,7 +15,7 @@ class VitasdkToolchainConan(ConanFile):
         tools.download("https://github.com/vitasdk/autobuilds/releases/download/master-linux-v1207/vitasdk-x86_64-linux-gnu-2020-09-11_14-42-25.tar.bz2", filename="vitasdk.tar.bz2")
         tools.untargz("vitasdk.tar.bz2")
 
-        additional_libs = ["libvita2d", "libpng", "libjpeg-turbo", "taihen", "zlib"]
+        additional_libs = ["libvita2d", "libpng", "libjpeg-turbo", "freetype", "taihen", "zlib"]
         for lib in additional_libs:
             lib = "{}.tar.xz".format(lib)
             tools.download("http://dl.vitasdk.org/{}".format(lib), filename=lib)

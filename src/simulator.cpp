@@ -111,7 +111,7 @@ void pkgi_rename(const std::string& from, const std::string& to)
     int res = rename(from.c_str(), to.c_str());
     if (res < 0)
         throw std::runtime_error(fmt::format(
-                "failed to rename from {} to {}:\n{:#08x}",
+                "无法将 {} 重命名为 {}:\n{:#08x}",
                 from,
                 to,
                 strerror(errno)));
@@ -134,7 +134,7 @@ void pkgi_mkdirs(const char* ppath)
         int err = mkdir(path.c_str(), 0777);
         if (err < 0 && errno != EEXIST)
             throw std::runtime_error(fmt::format(
-                    "sceIoMkdir({}) failed: {:#08x}",
+                    "新建文件夹 ({}) 失败: {:#08x}",
                     path.c_str(),
                     static_cast<uint32_t>(err)));
         *ptr = last;
@@ -155,7 +155,7 @@ void pkgi_delete_dir(const std::string& path)
 
     if (!dfd)
         throw formatEx<std::runtime_error>(
-                "failed open({}): {}", path, strerror(errno));
+                "无法打开 ({}): {}", path, strerror(errno));
 
     BOOST_SCOPE_EXIT_ALL(&)
     {
@@ -183,7 +183,7 @@ void pkgi_delete_dir(const std::string& path)
             const auto ret = unlink(new_path.c_str());
             if (ret < 0)
                 throw formatEx<std::runtime_error>(
-                        "failed unlink({}): {}", new_path, strerror(errno));
+                        "取消链接失败 ({}): {}", new_path, strerror(errno));
         }
     }
 
@@ -193,7 +193,7 @@ void pkgi_delete_dir(const std::string& path)
     res = rmdir(path.c_str());
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "failed rmdir({}): {}", path, strerror(errno));
+                "无法移动文件夹 ({}): {}", path, strerror(errno));
 }
 
 std::vector<uint8_t> pkgi_load(const std::string& path)
@@ -201,7 +201,7 @@ std::vector<uint8_t> pkgi_load(const std::string& path)
     int fd = open(path.c_str(), O_RDONLY);
     if (fd < 0)
         throw std::runtime_error(fmt::format(
-                "open({}) failed: {:#08x}", path, static_cast<uint32_t>(fd)));
+                "打开 ({}) 失败: {:#08x}", path, static_cast<uint32_t>(fd)));
 
     BOOST_SCOPE_EXIT_ALL(&)
     {
@@ -216,7 +216,7 @@ std::vector<uint8_t> pkgi_load(const std::string& path)
     const auto readsize = read(fd, data.data(), data.size());
     if (readsize < 0)
         throw std::runtime_error(fmt::format(
-                "sceIoRead({}) failed: {:#08x}",
+                "读取 ({}) 失败: {:#08x}",
                 path.c_str(),
                 static_cast<uint32_t>(readsize)));
 
@@ -283,7 +283,7 @@ void pkgi_save(const std::string& path, const void* data, uint32_t size)
     int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
     if (fd < 0)
         throw std::runtime_error(fmt::format(
-                "open({}) failed:\n{:#08x}", path, static_cast<uint32_t>(fd)));
+                "打开 ({}) 失败:\n{:#08x}", path, static_cast<uint32_t>(fd)));
 
     BOOST_SCOPE_EXIT_ALL(&)
     {
@@ -296,7 +296,7 @@ void pkgi_save(const std::string& path, const void* data, uint32_t size)
         int written = write(fd, data8, size);
         if (written <= 0)
             throw std::runtime_error(fmt::format(
-                    "write({}) failed:\n{:#08x}",
+                    "写入 ({}) 失败:\n{:#08x}",
                     path,
                     static_cast<uint32_t>(written)));
         data8 += written;
@@ -309,7 +309,7 @@ void* pkgi_create(const std::string& path)
     LOGF("pkgi_create {}", path);
     int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666);
     if (fd < 0)
-        throw std::runtime_error("pkgi_create failed");
+        throw std::runtime_error("PKGi创建失败");
 
     return (void*)(intptr_t)fd;
 }
@@ -338,7 +338,7 @@ int pkgi_write(void* f, const void* buffer, uint32_t size)
     const auto wrote = write((intptr_t)f, buffer, size);
     if (wrote < 0)
         throw formatEx<std::runtime_error>(
-                "failed to write to file:\n{}", strerror(errno));
+                "无法写入文件:\n{}", strerror(errno));
     return wrote;
 }
 

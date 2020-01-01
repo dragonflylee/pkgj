@@ -45,9 +45,9 @@ Bug fixes:
 
 What's new:
 
-- Added NoNpDrm check on boot. If NoNpDrm plugin is not properly loaded, user will be notified, which should limit user caused issues.
-- Reworked diagnostics to properly detect reF00D plugin and added support for 0syscall6.
-- Refined HTTPS related error message to inform user to use iTLS-Enso to fix HTTPS related issues.
+- 启动时增加 NoNpDrm 检查
+- 检测 reF00D 插件, 添加 0syscall6 检测支持
+- 优化 HTTPS 相关提示, 提示用户安装 [iTLS-Enso](https://github.com/SKGleba/iTLS-Enso/releases/latest)
 
 Bug fixes:
 
