@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#define PKGJ_UPDATE_URL "https://raw.githubusercontent.com/blastrock/pkgj/last"
+#define PKGJ_UPDATE_URL "https://raw.githubusercontent.com/dragonflylee/pkgj/last"
 #define PKGJ_UPDATE_URL_VERSION PKGJ_UPDATE_URL "/version"
 
 namespace
@@ -25,7 +25,7 @@ void start_download()
         const auto url =
                 fmt::format("{}/pkgj-v{}.vpk", PKGJ_UPDATE_URL, version);
 
-        pkgi_dialog_message("Downloading update", 0);
+        pkgi_dialog_message("正在下载新版本安装文件...", 0);
 
         try
         {
@@ -57,14 +57,14 @@ void start_download()
 
         pkgi_dialog_message(
                 fmt::format(
-                        "The update has been downloaded to {}, install "
-                        "it through VitaShell.",
+                        "新版本PKGj中文版安装文件已下载至{}, 请使 "
+                        "用VitaShell进行安装",
                         filename)
                         .c_str());
     }
     catch (const std::exception& e)
     {
-        pkgi_dialog_error(fmt::format("Download failed: {}", e.what()).c_str());
+        pkgi_dialog_error(fmt::format("下载失败: {}", e.what()).c_str());
     }
 }
 
@@ -73,8 +73,7 @@ void update_thread()
     try
     {
         if (!pkgi_is_module_present("NoNpDrm"))
-            pkgi_dialog_error(
-                    "NoNpDrm not found. Games cannot be installed or played.");
+            pkgi_dialog_error("未找到 NoNpDrm 无法安装游戏");
 
         while (pkgi_dialog_is_open())
         {
@@ -92,7 +91,7 @@ void update_thread()
 
         LOGF("last version is {}", last_version);
 
-        if (last_version != PKGI_VERSION)
+        if (last_version.compare(PKGI_VERSION))
         {
             LOG("new version available");
 
@@ -100,16 +99,16 @@ void update_thread()
 
             pkgi_dialog_question(
                     fmt::format(
-                            "New PKGj version {} is available!\nDo you want to "
-                            "download it?",
+                            "PKGj中文版现已更新至{}版本!\n是否立即"
+                            "下载?",
                             last_version)
                             .c_str(),
-                    {{"Yes",
+                    {{"立即下载",
                       [] {
                           pkgi_start_thread(
                                   "pkgj_update_download", &start_download);
                       }},
-                     {"No", [] {}}});
+                     {"以后再说", [] {}}});
         }
     }
     catch (const std::exception& e)

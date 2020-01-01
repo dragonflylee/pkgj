@@ -92,10 +92,10 @@ void pkgi_install(const char* contentid)
     const auto res = scePromoterUtilityPromotePkgWithRif(path, 1);
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "scePromoterUtilityPromotePkgWithRif failed: {:#08x}\n{}",
+                "调用NoNpDrm函数错误: {:#08x}\n{}",
                 static_cast<uint32_t>(res),
                 static_cast<uint32_t>(res) == 0x80870004
-                        ? "Please check your NoNpDrm installation"
+                        ? "请检查NoNpDrm插件安装是否正确"
                         : "");
 }
 
@@ -109,7 +109,7 @@ void pkgi_install_update(const std::string& titleid)
     const auto res = scePromoterUtilityPromotePkgWithRif(src.c_str(), 1);
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "scePromoterUtilityPromotePkgWithRif failed: {:#08x}",
+                "调用NoNpDrm函数错误: {:#08x}",
                 static_cast<uint32_t>(res));
 }
 
@@ -184,7 +184,7 @@ void pkgi_install_psmgame(const char* contentid)
     int res = sceIoRename(src.c_str(), dest.c_str());
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "failed to rename: {:#08x}", static_cast<uint32_t>(res));
+                "重命名失败: {:#08x}", static_cast<uint32_t>(res));
 
     LOGF("promoting psm game at {}", dest);
     ScePromoterUtilityImportParams promote_args;
@@ -200,7 +200,7 @@ void pkgi_install_psmgame(const char* contentid)
     res = scePromoterUtilityPromoteImport(&promote_args);
     if (res < 0)
         throw formatEx<std::runtime_error>(
-                "scePromoterUtilityPromoteImport failed: {:#08x}",
+                "scePromoterUtilityPromoteImport 失败: {:#08x}",
                 static_cast<uint32_t>(res));
 }
 
@@ -230,7 +230,7 @@ void pkgi_install_pspgame(const char* partition, const char* contentid)
     
     if (res < 0)
         throw std::runtime_error(fmt::format(
-                "failed to rename: {:#08x}", static_cast<uint32_t>(res)));
+                "无法重命名: {:#08x}", static_cast<uint32_t>(res)));
     // add game to installed psx games list so it comes up as installed.
     pkgi_psx_add_installed_game(title_id, disc_id);
 }
@@ -244,9 +244,9 @@ static void pkgi_move_merge(const std::string& from, const std::string& to)
         (fromType == InodeType::File && toType == InodeType::File))
         pkgi_rename(from, to);
     else if (fromType == InodeType::File && toType == InodeType::Directory)
-        throw formatEx("cannot replace directory {} by file {}", to, from);
+        throw formatEx("无法用{}文件替换{}文件夹", to, from);
     else if (fromType == InodeType::Directory && toType == InodeType::File)
-        throw formatEx("cannot replace directory {} by file {}", from, to);
+        throw formatEx("无法用{}文件替换{}文件夹", from, to);
     else if (fromType == InodeType::Directory && toType == InodeType::Directory)
     {
         const auto fromContents = pkgi_list_dir_contents(from);
@@ -257,7 +257,7 @@ static void pkgi_move_merge(const std::string& from, const std::string& to)
     }
     else
         throw formatEx(
-                "cannot merge {} ({}) and {} ({})",
+                "无法将 {} ({}) 和 {} ({})归并",
                 from,
                 (int)fromType,
                 to,

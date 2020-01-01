@@ -150,13 +150,13 @@ void CompPackDatabase::parse_entries(std::string& db_data)
             current_line = ptr;
             const auto fields = pkgi_split_row(&ptr, end);
             if (fields.size() < 1)
-                throw std::runtime_error("failed to split line");
+                throw std::runtime_error("无法解析行");
 
             const auto path = std::string(fields[0]);
 
             std::smatch matches;
             if (!std::regex_search(path, matches, regex))
-                throw formatEx<std::runtime_error>("regex didn't match");
+                throw formatEx<std::runtime_error>("正则表达式不正确");
             const auto titleid = matches.str(1);
             const auto app_version = matches.str(3);
 
@@ -169,13 +169,13 @@ void CompPackDatabase::parse_entries(std::string& db_data)
             auto err = sqlite3_step(stmt);
             if (err != SQLITE_DONE)
                 throw std::runtime_error(fmt::format(
-                        "can't execute SQL statement:\n{}",
+                        "无法执行SQL语句:\n{}",
                         sqlite3_errmsg(_sqliteDb.get())));
         }
         catch (const std::exception& e)
         {
             throw formatEx<std::runtime_error>(
-                    "failed to parse line\n{}\n{}", current_line, e.what());
+                    "无法解析行\n{}\n{}", current_line, e.what());
         }
     }
 }
@@ -187,7 +187,7 @@ void CompPackDatabase::update(Http* http, const std::string& update_url)
     uint64_t db_size = 0;
 
     if (update_url.empty())
-        throw std::runtime_error("no comp pack url");
+        throw std::runtime_error("没有兼容包链接");
 
     LOGF("loading comp pack list from {}", update_url);
 
@@ -197,7 +197,7 @@ void CompPackDatabase::update(Http* http, const std::string& update_url)
 
     if (length > (int64_t)db_data.size())
         throw std::runtime_error(
-                "comp pack list is too large... check for newer pkgj version");
+                "兼容包列表过大... 请更新PKGj版本");
 
     for (;;)
     {
@@ -211,7 +211,7 @@ void CompPackDatabase::update(Http* http, const std::string& update_url)
 
     if (db_size == 0)
         throw std::runtime_error(
-                "comp pack list is empty... check for newer pkgj version");
+                "兼容包列表为空... 请更新PKGj版本");
 
     LOG("parsing items");
 
@@ -253,7 +253,7 @@ std::optional<CompPackDatabase::Item> CompPackDatabase::get(
         return std::nullopt;
     if (err != SQLITE_ROW)
         throw std::runtime_error(fmt::format(
-                "can't execute SQL statement:\n{}",
+                "无法执行SQL语句:\n{}",
                 sqlite3_errmsg(_sqliteDb.get())));
 
     std::string app_version =

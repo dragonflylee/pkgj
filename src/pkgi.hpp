@@ -123,3 +123,4 @@ void pkgi_create_psp_rif(std::string contentid, uint8_t* rif);
 void pkgi_start_download(Downloader& downloader, const DbItem& item);
 
 bool pkgi_is_module_present(const char* module_name);
+void pkgi_friendly_size(char* text, uint32_t textlen, int64_t size);

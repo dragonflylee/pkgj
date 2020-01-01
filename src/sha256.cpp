@@ -367,7 +367,7 @@ void hmac_sha256_vector(
          * Fixed limit on the number of fragments to avoid having to
          * allocate memory (which could fail).
          */
-        throw std::runtime_error("Too many parts for HMAC-SHA256");
+        throw std::runtime_error("过多的HMAC-SHA256参数");
     }
 
     /* if key is longer than 64 bytes reset it to key = SHA256(key) */
