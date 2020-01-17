@@ -281,15 +281,24 @@ void TitleDatabase::update(Mode mode, Http* http, const std::string& update_url)
             pkgi_close(item_file);
     };
 
+    const auto filepath =
+            fmt::format("{}/{}", _dbPath, pkgi_mode_to_file_name(mode));
+    uint32_t last = pkgi_get_size(filepath.c_str());
+
     std::vector<uint8_t> db_data(64 * 1024);
     db_total = 0;
     db_size = 0;
 
     LOGF("loading update from {}", update_url);
 
-    http->start(update_url, 0);
+    http->start(update_url, 0, true);
 
     db_total = http->get_length();
+    if (last == db_total) return; // skip when size same
+
+    http->close();
+    http->start(update_url, 0);
+    
 
     for (;;)
     {
@@ -311,9 +320,6 @@ void TitleDatabase::update(Mode mode, Http* http, const std::string& update_url)
 
     pkgi_close(item_file);
     item_file = nullptr;
-
-    const auto filepath =
-            fmt::format("{}/{}", _dbPath, pkgi_mode_to_file_name(mode));
 
     pkgi_rename(tmppath, filepath);
 
