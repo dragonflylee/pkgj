@@ -27,6 +27,11 @@ static pkgi_http g_http[4];
 
 VitaHttp::~VitaHttp()
 {
+    close();
+}
+
+void VitaHttp::close()
+{
     if (_http)
     {
         LOG("http close");
@@ -34,10 +39,11 @@ VitaHttp::~VitaHttp()
         sceHttpDeleteConnection(_http->conn);
         sceHttpDeleteTemplate(_http->tmpl);
         _http->used = 0;
+        _http = nullptr;
     }
 }
 
-void VitaHttp::start(const std::string& url, uint64_t offset)
+void VitaHttp::start(const std::string& url, uint64_t offset, bool head)
 {
     if (_http)
         throw HttpError("HTTP connection already started");
@@ -87,7 +93,10 @@ void VitaHttp::start(const std::string& url, uint64_t offset)
     };
 
     if ((req = sceHttpCreateRequestWithURL(
-                 conn, SCE_HTTP_METHOD_GET, url.c_str(), 0)) < 0)
+                 conn,
+                 head ? SCE_HTTP_METHOD_HEAD : SCE_HTTP_METHOD_GET,
+                 url.c_str(),
+                 0)) < 0)
         throw HttpError(fmt::format(
                 "sceHttpCreateRequestWithURL failed: {:#08x}",
                 static_cast<uint32_t>(req)));
@@ -99,7 +108,7 @@ void VitaHttp::start(const std::string& url, uint64_t offset)
 
     int err;
 
-    if (offset != 0)
+    if (offset != 0 && !head)
     {
         char range[64];
         pkgi_snprintf(range, sizeof(range), "bytes=%llu-", offset);
