@@ -6,7 +6,7 @@ FileHttp::FileHttp(const std::string& path) : override_path(path)
 {
 }
 
-void FileHttp::start(const std::string& url, uint64_t offset)
+void FileHttp::start(const std::string& url, uint64_t offset, bool head)
 {
     LOGF("Fake downloading {}", url);
     f.open(override_path.empty() ? url : override_path);
@@ -20,6 +20,10 @@ int64_t FileHttp::read(uint8_t* buffer, uint64_t size)
 }
 
 void FileHttp::abort()
+{
+}
+
+void FileHttp::close()
 {
 }
 

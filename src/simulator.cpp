@@ -101,6 +101,11 @@ bool pkgi_file_exists(const std::string& path)
     return stat(path.c_str(), &s) == 0;
 }
 
+int64_t pkgi_get_size(const char*)
+{
+    return 0;
+}
+
 void pkgi_rename(const std::string& from, const std::string& to)
 {
     int res = rename(from.c_str(), to.c_str());
