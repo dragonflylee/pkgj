@@ -85,6 +85,7 @@ target_link_libraries(pkgj
   jpeg
   z
   m
+  freetype
   SceAppMgr_stub
   SceAppUtil_stub
   SceCommonDialog_stub
@@ -93,8 +94,7 @@ target_link_libraries(pkgj
   SceGxm_stub
   SceHttp_stub
   SceNet_stub
-  SceNetCtl_stub
-  ScePvf_stub
+  SceNetCtl_stub  
   ScePower_stub
   ScePromoterUtil_stub
   SceShellSvc_stub
