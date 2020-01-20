@@ -50,7 +50,7 @@ extern "C"
     int _newlib_heap_size_user = 128 * 1024 * 1024;
 }
 
-static vita2d_pvf* g_font;
+static vita2d_font* g_font;
 
 static SceKernelLwMutexWork g_dialog_lock;
 static volatile int g_power_lock;
@@ -574,20 +574,11 @@ void pkgi_start(void)
     if (pkgi_is_unsafe_mode()) {
         auto const path = fmt::format("{}/font.ttf", pkgi_get_config_folder());
         if (pkgi_file_exists(path))
-            g_font = vita2d_load_custom_pvf(path.c_str());
+            g_font = vita2d_load_font_file(path.c_str());
     }
 
     if (!g_font) 
-    {
-        vita2d_system_pvf_config config[] = {
-            { SCE_PVF_LANGUAGE_K, pkgi_is_korean_char },
-            { SCE_PVF_LANGUAGE_C, pkgi_is_chinese_char },
-            { SCE_PVF_LANGUAGE_LATIN, pkgi_is_latin_char },
-            { SCE_PVF_DEFAULT_LANGUAGE_CODE, nullptr }
-        };
-        g_font = vita2d_load_system_pvf(4, config);
-    }
-
+        g_font = vita2d_load_font_file("sa0:/data/font/pvf/cn0.pvf");
     g_time = sceKernelGetProcessTimeWide();
 
     sqlite3_rw_init();
@@ -658,7 +649,7 @@ void pkgi_end(void)
     pkgi_stop_debug_log();
 
     vita2d_fini();
-    vita2d_free_pvf(g_font);
+    vita2d_free_font(g_font);
 
     scePromoterUtilityExit();
 
@@ -877,12 +868,12 @@ void pkgi_draw_rect(int x, int y, int w, int h, uint32_t color)
 
 void pkgi_draw_text(int x, int y, uint32_t color, const char* text)
 {
-    vita2d_pvf_draw_text(g_font, x, y + 20, VITA_COLOR(color), 1.f, text);
+    vita2d_font_draw_text(g_font, x, y + 20, VITA_COLOR(color), 20.f, text);
 }
 
 int pkgi_text_width(const char* text)
 {
-    return vita2d_pvf_text_width(g_font, 1.f, text);
+    return vita2d_font_text_width(g_font, 20.f, text);
 }
 
 int pkgi_text_height(const char* text)
