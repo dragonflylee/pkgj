@@ -412,7 +412,7 @@ void pkgi_do_main(Downloader& downloader, pkgi_input* input)
             }
         }
 
-        if (input->active & PKGI_BUTTON_LEFT)
+        if (input->active & (PKGI_BUTTON_LEFT | PKGI_BUTTON_LT))
         {
             uint32_t max_items =
                     avail_height / (font_height + PKGI_MAIN_ROW_PADDING) - 1;
@@ -434,7 +434,7 @@ void pkgi_do_main(Downloader& downloader, pkgi_input* input)
             }
         }
 
-        if (input->active & PKGI_BUTTON_RIGHT)
+        if (input->active & (PKGI_BUTTON_RIGHT | PKGI_BUTTON_RT))
         {
             uint32_t max_items =
                     avail_height / (font_height + PKGI_MAIN_ROW_PADDING) - 1;
