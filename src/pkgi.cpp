@@ -203,7 +203,9 @@ void pkgi_refresh_thread(void)
             auto const http = std::make_unique<VitaHttp>();
             db->update(mode, http.get(), url);
         }
-        if (!config.comppack_url.empty())
+        int plugin_present = pkgi_is_module_present("ref00d") || 
+            pkgi_is_module_present("0syscall6");
+        if (!config.comppack_url.empty() && !plugin_present)
         {
             {
                 std::lock_guard<Mutex> lock(refresh_mutex);
