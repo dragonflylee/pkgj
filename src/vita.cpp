@@ -233,11 +233,12 @@ static void pkgi_load_sce_paf()
 
     uint32_t result = 0xDEADBEEF;
 
-    uint32_t buffer[4] = {};
-    buffer[1] = (uint32_t)&result;
+    SceSysmoduleOpt opt;
+    memset(&opt, 0, sizeof(opt));
+    opt.result = (int*)&result;
 
     sceSysmoduleLoadModuleInternalWithArg(
-            SCE_SYSMODULE_INTERNAL_PAF, sizeof(args), args, buffer);
+            SCE_SYSMODULE_INTERNAL_PAF, sizeof(args), args, &opt);
 }
 
 int pkgi_is_unsafe_mode(void)

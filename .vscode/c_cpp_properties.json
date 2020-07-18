@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${VITASDK}/include",
+                "${VITASDK}/arm-vita-eabi/include"
+            ],
+            "defines": [],
+            "compilerPath": "${VITASDK}/bin/arm-vita-eabi-g++",
+            "cStandard": "gnu17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}
