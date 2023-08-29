@@ -13,7 +13,7 @@ static constexpr char default_psx_games_url[] = "http://122.116.141.58:8001/PSV/
 static constexpr char default_psp_games_url[] = "http://122.116.141.58:8001/PSV/titles_pspgames.tsv";
 static constexpr char default_psp_dlcs_url[] = "http://122.116.141.58:8001/PSV/titles_pspdlcs.tsv";
 static constexpr char default_psm_games_url[] = "http://122.116.141.58:8001/PSV/titles_psmgames.tsv";
-static constexpr char default_comppack_url[] = {0};
+static constexpr char default_comppack_url[] = "http://122.116.141.58:8001/PSV/comppack.db";
 
 static char* skipnonws(char* text, char* end)
 {

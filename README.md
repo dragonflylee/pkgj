@@ -150,12 +150,12 @@ puff.h and puff.c files are under [zlib][] license.
 [PSDLE]: https://repod.github.io/psdle/
 [socat]: http://www.dest-unreach.org/socat/
 [zlib]: https://www.zlib.net/zlib_license.html
-[pkgj_downloads]: https://github.com/blastrock/pkgj/releases
-[pkgj_latest]: https://github.com/blastrock/pkgj/releases/latest
-[pkgj_license]: https://github.com/blastrock/pkgj/blob/master/LICENSE
-[img_downloads]: https://img.shields.io/github/downloads/blastrock/pkgj/total.svg?maxAge=3600
-[img_latest]: https://img.shields.io/github/release/blastrock/pkgj.svg?maxAge=3600
-[img_license]: https://img.shields.io/github/license/blastrock/pkgj.svg?maxAge=2592000
+[pkgj_downloads]: https://github.com/dragonflylee/pkgj/releases
+[pkgj_latest]: https://github.com/dragonflylee/pkgj/releases/latest
+[pkgj_license]: https://github.com/dragonflylee/pkgj/blob/master/LICENSE
+[img_downloads]: https://img.shields.io/github/downloads/dragonflylee/pkgj/total.svg?maxAge=3600
+[img_latest]: https://img.shields.io/github/release/dragonflylee/pkgj.svg?maxAge=3600
+[img_license]: https://img.shields.io/github/license/dragonflylee/pkgj.svg?maxAge=2592000
 
 # Donating
 
