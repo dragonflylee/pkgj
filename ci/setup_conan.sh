@@ -29,3 +29,4 @@ poetry run conan export conan-vitasdk
 poetry run conan export conan-fmt
 poetry run conan export conan-libzip
 poetry run conan export conan-vitasqlite
+poetry run conan export conan-libvita2d

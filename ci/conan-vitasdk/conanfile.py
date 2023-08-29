@@ -23,7 +23,6 @@ class VitasdkToolchainConan(ConanFile):
         files.unzip(self, "vitasdk.tar.bz2")
 
         additional_libs = [
-            "libvita2d",
             "libpng",
             "freetype",
             "libjpeg-turbo",
