@@ -1,0 +1,45 @@
+diff --git a/libvita2d/source/vita2d_font.c b/libvita2d/source/vita2d_font.c
+index d1d9287..72e1ec7 100755
+--- a/libvita2d/source/vita2d_font.c
++++ b/libvita2d/source/vita2d_font.c
+@@ -11,8 +11,8 @@
+ #include "utils.h"
+ #include "shared.h"
+ 
+-#define ATLAS_DEFAULT_W 512
+-#define ATLAS_DEFAULT_H 512
++#define ATLAS_DEFAULT_W 4096
++#define ATLAS_DEFAULT_H 4096
+ 
+ typedef enum {
+ 	VITA2D_LOAD_FONT_FROM_FILE,
+diff --git a/libvita2d/source/vita2d_pgf.c b/libvita2d/source/vita2d_pgf.c
+index 6fc461c..7f9b4f0 100755
+--- a/libvita2d/source/vita2d_pgf.c
++++ b/libvita2d/source/vita2d_pgf.c
+@@ -13,8 +13,8 @@
+ #include "utils.h"
+ #include "shared.h"
+ 
+-#define ATLAS_DEFAULT_W 512
+-#define ATLAS_DEFAULT_H 512
++#define ATLAS_DEFAULT_W 4096
++#define ATLAS_DEFAULT_H 4096
+ 
+ typedef struct vita2d_pgf_font_handle {
+ 	SceFontHandle font_handle;
+diff --git a/libvita2d/source/vita2d_pvf.c b/libvita2d/source/vita2d_pvf.c
+index ce58283..affd080 100755
+--- a/libvita2d/source/vita2d_pvf.c
++++ b/libvita2d/source/vita2d_pvf.c
+@@ -13,8 +13,8 @@
+ #include "utils.h"
+ #include "shared.h"
+ 
+-#define ATLAS_DEFAULT_W 512
+-#define ATLAS_DEFAULT_H 512
++#define ATLAS_DEFAULT_W 4096
++#define ATLAS_DEFAULT_H 4096
+ 
+ #define PVF_GLYPH_MARGIN 2
+ 

@@ -1,0 +1,6 @@
+sources:
+  "0.0.2":
+    url: "https://github.com/xerpi/libvita2d/archive/master.tar.gz"
+patches:
+  "0.0.2":
+    - patch_file: "patches/0001-fix-tex-size.patch"
